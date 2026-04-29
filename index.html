@@ -15,8 +15,8 @@
             <p>We're here to help. Send us a message and we'll respond as soon as possible.</p>
         </div>
         
-        <!-- Replace YOUR_WEBHOOK_URL_HERE with your actual webhook URL later -->
-        <form id="support-form" action="YOUR_WEBHOOK_URL_HERE" method="POST">
+        <!-- Form submitted via JavaScript Fetch API -->
+        <form id="support-form">
             <div class="input-group">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" placeholder="John Doe" required>
@@ -56,7 +56,7 @@
             e.preventDefault(); // Prevent default page reload
             
             const form = this;
-            const webhookUrl = form.getAttribute('action');
+            const webhookUrl = 'https://zookeeper-squeamish-tutor.ngrok-free.dev/webhook-test/71de33b2-1156-4218-bd30-041c5ae2b17f';
             const submitBtn = form.querySelector('.submit-btn');
             const originalBtnHtml = submitBtn.innerHTML;
             
@@ -67,7 +67,11 @@
             submitBtn.style.cursor = 'not-allowed';
 
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message')
+            };
 
             // Helper to show success message
             const showSuccess = () => {
@@ -82,28 +86,35 @@
                 }, 50);
             };
 
-            // If it's the placeholder URL, simulate the request for testing
-            if (webhookUrl === 'YOUR_WEBHOOK_URL_HERE') {
-                setTimeout(showSuccess, 1000);
-            } else {
-                // Actual fetch request to your webhook
-                fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data),
-                })
-                .then(response => {
-                    showSuccess();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    submitBtn.innerHTML = originalBtnHtml;
-                    submitBtn.disabled = false;
-                    submitBtn.style.opacity = '1';
-                    submitBtn.style.cursor = 'pointer';
+            // Actual fetch request to the webhook
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                showSuccess();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                submitBtn.innerHTML = originalBtnHtml;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                
+                // Gracefully handle CORS or Network errors
+                if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                    alert('Network or CORS error: The server might be unreachable or blocking the request.');
+                } else {
                     alert('There was an error sending your message. Please try again.');
-                });
-            }
+                }
+            });
         });
     </script>
 </body>
