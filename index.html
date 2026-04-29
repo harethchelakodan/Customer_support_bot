@@ -1,121 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Support</title>
-    <meta name="description" content="Get in touch with our support team. We are here to help you.">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="contact-container">
-        <div class="contact-header">
-            <h1>Get in Touch</h1>
-            <p>We're here to help. Send us a message and we'll respond as soon as possible.</p>
-        </div>
-        
-        <!-- Form submitted via JavaScript Fetch API -->
-        <form id="support-form">
-            <div class="input-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" placeholder="John Doe" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="john@example.com" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="message">How can we help?</label>
-                <textarea id="message" name="message" rows="5" placeholder="Describe your issue or ask a question..." required></textarea>
-            </div>
-            
-            <button type="submit" class="submit-btn">
-                <span>Send Message</span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-        </form>
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --input-bg: #0f172a;
+    --error-color: #ef4444;
+}
 
-        <div id="success-message" style="display: none; text-align: center; padding: 2rem 0; opacity: 0;">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem; color: var(--text-main);">Thanks for contacting us!</h2>
-            <p style="color: var(--text-muted); line-height: 1.5;">We've received your message and will get back to you shortly.</p>
-        </div>
-    </div>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <script>
-        document.getElementById('support-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent default page reload
-            
-            const form = this;
-            const webhookUrl = 'https://zookeeper-squeamish-tutor.ngrok-free.dev/webhook-test/71de33b2-1156-4218-bd30-041c5ae2b17f';
-            const submitBtn = form.querySelector('.submit-btn');
-            const originalBtnHtml = submitBtn.innerHTML;
-            
-            // Show loading state
-            submitBtn.innerHTML = '<span>Sending...</span>';
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.7';
-            submitBtn.style.cursor = 'not-allowed';
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+    background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+}
 
-            const formData = new FormData(form);
-            const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                message: formData.get('message')
-            };
+.contact-container {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-            // Helper to show success message
-            const showSuccess = () => {
-                form.style.display = 'none';
-                const successMsg = document.getElementById('success-message');
-                successMsg.style.display = 'block';
-                // Trigger a simple fade-in animation
-                setTimeout(() => {
-                    successMsg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    successMsg.style.opacity = '1';
-                    successMsg.style.transform = 'translateY(-10px)';
-                }, 50);
-            };
+.contact-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+}
 
-            // Actual fetch request to the webhook
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                showSuccess();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                submitBtn.innerHTML = originalBtnHtml;
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                submitBtn.style.cursor = 'pointer';
-                
-                // Gracefully handle CORS or Network errors
-                if (error instanceof TypeError && error.message === 'Failed to fetch') {
-                    alert('Network or CORS error: The server might be unreachable or blocking the request.');
-                } else {
-                    alert('There was an error sending your message. Please try again.');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+.contact-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.contact-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #a5b4fc, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.contact-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: color 0.3s ease;
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.input-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+    color: #475569;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #818cf8, var(--primary-color));
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.submit-btn:hover svg {
+    transform: translate(3px, -3px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+    .contact-container {
+        padding: 1.5rem;
+    }
+    
+    .contact-header h1 {
+        font-size: 1.75rem;
+    }
+}
