@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Support</title>
+    <meta name="description" content="Get in touch with our support team. We are here to help you.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>Get in Touch</h1>
+            <p>We're here to help. Send us a message and we'll respond as soon as possible.</p>
+        </div>
+        
+        <!-- Replace YOUR_WEBHOOK_URL_HERE with your actual webhook URL later -->
+        <form id="support-form" action="YOUR_WEBHOOK_URL_HERE" method="POST">
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="John Doe" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="john@example.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="message">How can we help?</label>
+                <textarea id="message" name="message" rows="5" placeholder="Describe your issue or ask a question..." required></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                <span>Send Message</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </form>
+
+        <div id="success-message" style="display: none; text-align: center; padding: 2rem 0; opacity: 0;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem;">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem; color: var(--text-main);">Thanks for contacting us!</h2>
+            <p style="color: var(--text-muted); line-height: 1.5;">We've received your message and will get back to you shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('support-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default page reload
+            
+            const form = this;
+            const webhookUrl = form.getAttribute('action');
+            const submitBtn = form.querySelector('.submit-btn');
+            const originalBtnHtml = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<span>Sending...</span>';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.cursor = 'not-allowed';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Helper to show success message
+            const showSuccess = () => {
+                form.style.display = 'none';
+                const successMsg = document.getElementById('success-message');
+                successMsg.style.display = 'block';
+                // Trigger a simple fade-in animation
+                setTimeout(() => {
+                    successMsg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    successMsg.style.opacity = '1';
+                    successMsg.style.transform = 'translateY(-10px)';
+                }, 50);
+            };
+
+            // If it's the placeholder URL, simulate the request for testing
+            if (webhookUrl === 'YOUR_WEBHOOK_URL_HERE') {
+                setTimeout(showSuccess, 1000);
+            } else {
+                // Actual fetch request to your webhook
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    showSuccess();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.innerHTML = originalBtnHtml;
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
+                    alert('There was an error sending your message. Please try again.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
