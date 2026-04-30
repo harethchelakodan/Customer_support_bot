@@ -217,7 +217,7 @@ body {
             e.preventDefault(); // Prevent default page reload
             
             const form = this;
-            const webhookUrl = 'https://know-sleep-andrea-sic.trycloudflare.com';
+            const webhookUrl = 'https://know-sleep-andrea-sic.trycloudflare.com/webhook/71de33b2-1156-4218-bd30-041c5ae2b17f';
             const submitBtn = form.querySelector('.submit-btn');
             const originalBtnHtml = submitBtn.innerHTML;
             
@@ -237,8 +237,7 @@ body {
             fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data),
             })
